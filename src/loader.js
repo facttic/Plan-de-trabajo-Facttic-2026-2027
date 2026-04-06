@@ -21,6 +21,16 @@ if (sessionStorage.getItem('navigating')) {
   }
 }
 
+// bfcache restore (back/forward button): reset any stuck overlay state
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted) {
+    overlay.style.opacity = '0'
+    overlay.style.pointerEvents = 'none'
+    document.body.classList.remove('is-leaving')
+    sessionStorage.removeItem('navigating')
+  }
+})
+
 // Exit: cover screen then navigate
 document.addEventListener('click', (e) => {
   const link = e.target.closest('a[href]')
