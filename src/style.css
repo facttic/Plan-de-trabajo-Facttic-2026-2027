@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Recursive';
+  src: url('/Recursive-VariableFont_CASL,CRSV,MONO,slnt,wght.ttf') format('truetype');
+  font-weight: 100 1000;
+  font-style: normal oblique -15deg 0deg;
+  font-display: swap;
+}
+
+/* Custom scrollbar */
+#modal-list {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.15) transparent;
+}
+
+#modal-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+#modal-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#modal-list::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 9999px;
+}
+
+#modal-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+/* Page transitions */
+body {
+  animation: page-in 0.25s ease both;
+}
+
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+body.is-leaving {
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Full-screen page loader */
+#page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  background: #282623;
+  transition: opacity 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#page-loader::after {
+  content: '';
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  border-top-color: #F1DA1C;
+  border-right-color: #68DE94;
+  animation: loader-spin 0.7s linear infinite;
+}
+
+@keyframes loader-spin {
+  to { transform: rotate(360deg); }
+}
+
+@theme {
+  --font-sans: 'Recursive', system-ui, sans-serif;
+
+  /* Brand palette */
+  --color-brand-blue:   #175FF3;
+  --color-brand-purple: #8940EA;
+  --color-brand-cyan:   #48D2F1;
+  --color-brand-green:  #68DE94;
+  --color-brand-yellow: #F1DA1C;
+  --color-brand-coral:  #FF6853;
+  --color-brand-orange: #FF6853;
+  --color-brand-red:    #FF4353;
+  --color-brand-black:  #282623;
+  --color-brand-gray:   #A0A19E;
+}
