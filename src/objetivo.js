@@ -57,11 +57,40 @@ if (!eje || !obj) {
         const detalle = a.descripcion_detalle
           ? `<p class="text-brand-gray text-sm leading-relaxed">${a.descripcion_detalle}</p>`
           : ''
+
+        const entregablesHtml = a.entregables?.length
+          ? `<div class="space-y-1.5 pt-3 border-t border-white/8">
+              <p class="text-xs font-semibold uppercase tracking-widest" style="color:${color.hex}; opacity:0.7">Entregables</p>
+              <ul class="space-y-1.5">
+                ${a.entregables.map(e => `
+                  <li class="space-y-0.5">
+                    <p class="text-white/80 text-xs font-medium">${e.nombre}</p>
+                    <p class="text-brand-gray text-xs leading-relaxed">${e.descripcion}</p>
+                  </li>`).join('')}
+              </ul>
+             </div>`
+          : ''
+
+        const metricasHtml = a.metricas?.length
+          ? `<div class="space-y-1.5 pt-3 border-t border-white/8">
+              <p class="text-xs font-semibold uppercase tracking-widest" style="color:${color.hex}; opacity:0.7">Métricas</p>
+              <ul class="space-y-1.5">
+                ${a.metricas.map(m => `
+                  <li class="space-y-0.5">
+                    <p class="text-white/80 text-xs font-medium">${m.nombre}</p>
+                    <p class="text-brand-gray text-xs leading-relaxed">${m.descripcion}</p>
+                  </li>`).join('')}
+              </ul>
+             </div>`
+          : ''
+
         return `
           <li class="space-y-2 rounded-xl border border-white/8 bg-white/4 p-4 sm:p-5">
             <p class="text-white/90 text-sm font-medium leading-snug">${a.nombre}</p>
             ${detalle}
             ${badges}
+            ${entregablesHtml}
+            ${metricasHtml}
           </li>`
       }).join('')
 
