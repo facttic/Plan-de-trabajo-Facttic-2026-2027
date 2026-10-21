@@ -53,6 +53,17 @@ body.is-leaving {
   to { transform: rotate(360deg); }
 }
 
+/* Inline loader while data is fetched */
+.data-loader {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  border-top-color: #F1DA1C;
+  border-right-color: #68DE94;
+  animation: loader-spin 0.7s linear infinite;
+}
+
 @theme {
   --font-sans: 'Recursive', system-ui, sans-serif;
 
