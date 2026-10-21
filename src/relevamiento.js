@@ -2,7 +2,7 @@ import './style.css'
 import './loader.js'
 import {
   ejes, ejeColors, ESTADOS, ejeKey, ejeLabel, accionableKey, responsableOf,
-  responsables, esc, loadRelevamiento, saveRelevamiento, latestByAccionable, SHEETS_URL, loadingHtml,
+  responsables, esc, loadRelevamiento, saveRelevamiento, latestByAccionable, SHEETS_URL, loadingHtml, estadoIcon,
 } from './relevamiento-store.js'
 
 const container = document.getElementById('relevamiento-content')
@@ -15,8 +15,8 @@ const today = new Date().toISOString().slice(0, 10)
 const remembered = (k) => { try { return localStorage.getItem(k) ?? '' } catch { return '' } }
 const remember = (k, v) => { try { localStorage.setItem(k, v) } catch {} }
 
-const inputClass = 'w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-brand-gray/50 focus:outline-none focus:border-white/30'
-const labelClass = 'text-xs font-semibold uppercase tracking-widest text-brand-gray/60'
+const inputClass = 'w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base text-white placeholder:text-brand-gray/50 focus:outline-none focus:border-white/30'
+const labelClass = 'block text-sm font-semibold uppercase tracking-widest text-brand-gray'
 
 // Literal class names per estado so Tailwind picks them up
 const estadoChecked = {
@@ -36,21 +36,22 @@ const accionableHtml = (obj, a, idx) => {
   const options = Object.keys(estadoChecked).map((estado) => `
     <label class="cursor-pointer">
       <input type="radio" name="${name}" value="${estado}" class="peer sr-only" ${prev?.estado === estado ? 'checked' : ''}>
-      <span class="inline-block text-xs rounded-full px-3 py-1 border border-white/10 text-brand-gray hover:text-white transition-colors ${estadoChecked[estado]}">
+      <span class="inline-flex items-center gap-2 text-sm sm:text-base font-medium rounded-full px-4 py-2 border border-white/15 text-brand-gray hover:text-white hover:border-white/30 transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-white/50 ${estadoChecked[estado]}">
+        ${estadoIcon(estado, 'w-5 h-5')}
         ${ESTADOS[estado].label}
       </span>
     </label>`).join('')
 
-  const prevBadge = `<p class="ultimo text-xs text-brand-gray/60">${prev ? ultimoHtml(prev) : ''}</p>`
+  const prevBadge = `<p class="ultimo text-sm text-brand-gray">${prev ? ultimoHtml(prev) : ''}</p>`
 
   return `
-    <li class="accionable space-y-3 rounded-xl border border-white/8 bg-white/4 p-4"
+    <li class="accionable space-y-4 rounded-xl border border-white/10 bg-white/4 p-5 sm:p-6"
         data-objetivo="${obj.id}" data-accionable="${esc(a.nombre)}" data-responsable="${esc(responsableOf(a))}"
         data-prev-estado="${prev?.estado ?? ''}" data-prev-comentario="${esc(prev?.comentario ?? '')}">
-      <div class="space-y-1.5">
-        <p class="text-white/90 text-sm font-medium leading-snug">${a.nombre}</p>
-        <span class="inline-flex items-center gap-1.5 text-xs rounded-full px-2.5 py-0.5 bg-white/6 text-brand-gray border border-white/8">
-          <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+      <div class="space-y-2">
+        <p class="text-white text-base sm:text-lg font-medium leading-snug">${a.nombre}</p>
+        <span class="inline-flex items-center gap-1.5 text-sm rounded-full px-3 py-1 bg-white/6 text-brand-gray border border-white/10">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
           ${responsableOf(a)}
         </span>
         ${prevBadge}
@@ -66,16 +67,16 @@ const objetivosHtml = ejes.map((eje) => {
   const objetivos = eje.objetivos.filter((o) => o.accionables.length > 0)
 
   return `
-    <section class="eje-section space-y-4" data-eje="${key}">
+    <section class="eje-section space-y-6" data-eje="${key}">
       <div class="space-y-1 border-l-4 ${color.border} pl-5">
-        <p class="text-xs font-mono font-bold uppercase tracking-widest ${color.text}">EJE ${key}</p>
-        <h2 class="text-lg font-bold text-white leading-tight">${ejeLabel(eje)}</h2>
+        <p class="text-sm font-mono font-bold uppercase tracking-widest ${color.text}">EJE ${key}</p>
+        <h2 class="text-xl sm:text-2xl font-bold text-white leading-tight">${ejeLabel(eje)}</h2>
       </div>
       ${objetivos.map((obj) => `
         <div class="objetivo space-y-3">
           <div class="flex items-start gap-3">
-            <span class="mt-0.5 text-xs font-mono font-bold ${color.text} shrink-0 w-6">${obj.id}</span>
-            <p class="text-white/90 font-medium leading-snug">${obj.objetivo}</p>
+            <span class="mt-1 text-sm font-mono font-bold ${color.text} shrink-0 w-7">${obj.id}</span>
+            <p class="text-white text-lg font-semibold leading-snug">${obj.objetivo}</p>
           </div>
           <ul class="space-y-3">
             ${obj.accionables.map((a, i) => accionableHtml(obj, a, i)).join('')}
@@ -87,13 +88,13 @@ const objetivosHtml = ejes.map((eje) => {
 container.innerHTML = `
   <!-- Header -->
   <div class="space-y-3 border-l-4 border-brand-green pl-5">
-    <p class="text-xs font-mono font-bold uppercase tracking-widest text-brand-green">Relevamiento</p>
-    <h1 class="text-2xl font-bold text-white leading-tight">¿Se cumplieron los objetivos?</h1>
-    <p class="text-brand-gray text-sm leading-relaxed">
+    <p class="text-sm font-mono font-bold uppercase tracking-widest text-brand-green">Relevamiento</p>
+    <h1 class="text-3xl font-bold text-white leading-tight">¿Se cumplieron los objetivos?</h1>
+    <p class="text-brand-gray text-base leading-relaxed">
       Indicá o editá el estado de cada accionable. Un objetivo se considera cumplido cuando todos sus accionables lo están.
       Solo se guardan los accionables que cambies.
     </p>
-    <a href="./resultados.html" class="inline-flex items-center gap-2 text-sm text-brand-green hover:text-white transition-colors">
+    <a href="./resultados.html" class="inline-flex items-center gap-2 text-base text-brand-green hover:text-white transition-colors">
       Ver resultados
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
     </a>
@@ -136,12 +137,12 @@ container.innerHTML = `
     </div>
 
     <div id="objetivos" class="space-y-10">${objetivosHtml}</div>
-    <p id="sin-resultados" class="hidden text-brand-gray text-center text-sm">No hay accionables para este filtro.</p>
+    <p id="sin-resultados" class="hidden text-brand-gray text-center text-base">No hay accionables para este filtro.</p>
 
     <!-- Submit -->
     <div class="sticky bottom-0 -mx-4 sm:mx-0 px-4 sm:px-0 py-4 bg-brand-black/95 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
-      <p id="form-status" class="text-sm text-brand-gray" aria-live="polite">Sin cambios</p>
-      <button type="submit" class="rounded-full bg-brand-green px-5 py-2.5 text-sm font-semibold text-brand-black hover:bg-white transition-colors disabled:opacity-50">
+      <p id="form-status" class="text-base text-brand-gray" aria-live="polite">Sin cambios</p>
+      <button type="submit" class="rounded-full bg-brand-green px-6 py-3 text-base font-semibold text-brand-black hover:bg-white transition-colors disabled:opacity-50">
         Guardar relevamiento
       </button>
     </div>
@@ -166,7 +167,7 @@ const changed = () => items
 
 const updateCount = () => {
   const n = changed().length
-  status.className = 'text-sm text-brand-gray'
+  status.className = 'text-base text-brand-gray'
   status.textContent = n === 0 ? 'Sin cambios' : `${n} cambio${n === 1 ? '' : 's'} sin guardar`
 }
 
@@ -213,7 +214,7 @@ form.addEventListener('submit', async (e) => {
     : cambios.length === 0 ? 'No hay cambios para guardar.'
     : null
   if (error) {
-    status.className = 'text-sm text-brand-red'
+    status.className = 'text-base text-brand-red'
     status.textContent = error
     return
   }
@@ -223,7 +224,7 @@ form.addEventListener('submit', async (e) => {
 
   const button = form.querySelector('button[type=submit]')
   button.disabled = true
-  status.className = 'text-sm text-brand-gray'
+  status.className = 'text-base text-brand-gray'
   status.textContent = 'Guardando…'
 
   const entry = {
@@ -246,13 +247,13 @@ form.addEventListener('submit', async (e) => {
     saved = await saveRelevamiento(entry, data, clave)
   } catch (err) {
     button.disabled = false
-    status.className = 'text-sm text-brand-red'
+    status.className = 'text-base text-brand-red'
     status.textContent = `Error al guardar: ${err.message}`
     return
   }
 
   button.disabled = false
-  status.className = 'text-sm text-brand-green'
+  status.className = 'text-base text-brand-green'
   if (saved) {
     // Saved values become the new baseline for the next edit
     for (const { li, estado, comentario } of cambios) {

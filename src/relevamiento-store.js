@@ -10,11 +10,17 @@ export const ejeColors = {
 }
 
 export const ESTADOS = {
-  cumplido:    { label: 'Cumplido',    hex: '#68DE94' },
-  en_progreso: { label: 'En progreso', hex: '#F1DA1C' },
-  no_cumplido: { label: 'No cumplido', hex: '#FF4353' },
-  sin_relevar: { label: 'Sin relevar', hex: '#A0A19E' },
+  cumplido:    { label: 'Cumplido',    hex: '#68DE94', icon: 'M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+  en_progreso: { label: 'En progreso', hex: '#F1DA1C', icon: 'M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z' },
+  no_cumplido: { label: 'No cumplido', hex: '#FF4353', icon: 'M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
+  sin_relevar: { label: 'Sin relevar', hex: '#A0A19E', icon: 'M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z' },
 }
+
+// Status is never color-only: every estado carries its icon
+export const estadoIcon = (estado, cls = 'w-4 h-4') => `
+  <svg class="${cls} shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="${ESTADOS[estado]?.icon ?? ESTADOS.sin_relevar.icon}"/>
+  </svg>`
 
 const API = './api/relevamiento'
 
