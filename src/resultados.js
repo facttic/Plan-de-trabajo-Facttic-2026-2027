@@ -1,7 +1,7 @@
 import './style.css'
 import './loader.js'
 import {
-  ejes, ejeColors, ESTADOS, ejeKey, ejeLabel, accionables, responsables,
+  ejes, ejeColors, ESTADOS, ejeKey, ejeLabel, accionables,
   esc, loadRelevamiento, latestByAccionable, countEstados, estadoObjetivo, loadingHtml, estadoIcon,
 } from './relevamiento-store.js'
 
@@ -135,34 +135,6 @@ const ejesCardsHtml = `
     }).join('')}
   </div>`
 
-// --- Mapa de objetivos (semáforo) ---
-const mapaHtml = `
-  <div class="space-y-5">
-    ${ejes.map((eje) => {
-      const key = ejeKey(eje)
-      const color = ejeColors[key] ?? ejeColors.A
-      const objs = eje.objetivos.filter((o) => o.accionables.length > 0)
-      return `
-        <div class="space-y-2">
-          <p class="text-sm font-mono font-bold uppercase tracking-widest ${color.text}">EJE ${key}</p>
-          <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
-            ${objs.map((obj) => {
-              const estado = estadoObjetivo(itemsDe(obj.id), latest)
-              const hex = ESTADOS[estado].hex
-              return `
-                <a href="#obj-${obj.id}" title="${obj.id} · ${esc(obj.objetivo)} — ${ESTADOS[estado].label}"
-                   class="rounded-xl border p-3 flex flex-col items-center gap-1.5 hover:brightness-125 transition"
-                   style="border-color:${hex}60; background:${hex}1f; color:${hex}">
-                  ${estadoIcon(estado, 'w-6 h-6')}
-                  <span class="text-base font-mono font-bold text-white">${obj.id}</span>
-                  <span class="text-xs">${ESTADOS[estado].label}</span>
-                </a>`
-            }).join('')}
-          </div>
-        </div>`
-    }).join('')}
-  </div>`
-
 // --- Detalle por objetivo ---
 const accionableDetalle = (a) => {
   const r = latest.get(a.key)
@@ -209,57 +181,6 @@ const detalleHtml = ejes.map((eje) => {
     </section>`
 }).join('')
 
-// Open the objetivo targeted from the mapa
-window.addEventListener('hashchange', () => {
-  const el = document.querySelector(location.hash)
-  if (el?.tagName === 'DETAILS') el.open = true
-})
-
-// --- Por responsable: tabla ---
-const filasResponsables = responsables
-  .map((r) => {
-    const items = accionables.filter((a) => a.responsable === r)
-    return { r, total: items.length, counts: countEstados(items, latest) }
-  })
-  .sort((a, b) => pct(b.counts.cumplido, b.total) - pct(a.counts.cumplido, a.total) || a.r.localeCompare(b.r, 'es'))
-
-const th = (e) => `
-  <th class="px-2 py-3 font-medium" title="${ESTADOS[e].label}">
-    <span class="inline-flex justify-center w-full" style="color:${ESTADOS[e].hex}">${estadoIcon(e, 'w-5 h-5')}</span>
-    <span class="sr-only">${ESTADOS[e].label}</span>
-  </th>`
-
-const responsablesHtml = `
-  <div class="overflow-x-auto rounded-xl border border-white/10">
-    <table class="w-full text-base">
-      <thead class="bg-white/5 text-sm text-brand-gray">
-        <tr>
-          <th class="text-left px-4 py-3 font-medium">Responsable</th>
-          ${ORDEN.map(th).join('')}
-          <th class="text-left px-4 py-3 font-medium min-w-36">Cumplido</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${filasResponsables.map(({ r, total, counts }) => {
-          const p = pct(counts.cumplido, total)
-          return `
-            <tr class="border-t border-white/8">
-              <td class="px-4 py-3 text-white/90 leading-snug">${esc(r)}</td>
-              ${ORDEN.map((e) => `<td class="px-2 py-3 text-center tabular-nums ${counts[e] ? 'text-white' : 'text-brand-gray/40'}">${counts[e]}</td>`).join('')}
-              <td class="px-4 py-3">
-                <div class="flex items-center gap-2">
-                  <div class="h-2 flex-1 rounded-full bg-white/10 overflow-hidden">
-                    <div class="h-full rounded-full" style="width:${p}%; background:${ESTADOS.cumplido.hex}"></div>
-                  </div>
-                  <span class="text-sm text-white tabular-nums w-10 text-right">${p}%</span>
-                </div>
-              </td>
-            </tr>`
-        }).join('')}
-      </tbody>
-    </table>
-  </div>`
-
 // --- Historial ---
 const historialHtml = relevamientos.length === 0
   ? `<p class="text-base text-brand-gray">Todavía no hay relevamientos cargados.</p>`
@@ -295,19 +216,9 @@ container.innerHTML = `
     ${ejesCardsHtml}
   </div>
 
-  <div class="space-y-5 pt-8 border-t border-white/10">
-    ${sectionTitle('Mapa de objetivos', 'Estado de cada objetivo. Tocá uno para ver el detalle.')}
-    ${mapaHtml}
-  </div>
-
   <div class="space-y-8 pt-8 border-t border-white/10">
     ${sectionTitle('Detalle por objetivo')}
     ${detalleHtml}
-  </div>
-
-  <div class="space-y-5 pt-8 border-t border-white/10">
-    ${sectionTitle('Por responsable', 'Accionables por estado, ordenado por porcentaje cumplido.')}
-    ${responsablesHtml}
   </div>
 
   <div class="space-y-5 pt-8 border-t border-white/10">

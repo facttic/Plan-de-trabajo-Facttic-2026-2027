@@ -28,7 +28,20 @@ const estadoChecked = {
 const ultimoHtml = (r) =>
   `Último: <span style="color:${ESTADOS[r.estado]?.hex}">${ESTADOS[r.estado]?.label ?? esc(r.estado)}</span> · ${esc(r.fecha)} · ${esc(r.relevado_por)}`
 
-const accionableHtml = (obj, a, idx) => {
+// Read-only list of entregables or métricas from the plan
+const infoListHtml = (titulo, list, color) => list?.length ? `
+  <div class="space-y-1.5">
+    <p class="text-xs font-semibold uppercase tracking-widest ${color.text}">${titulo}</p>
+    <ul class="space-y-1.5">
+      ${list.map((x) => `
+        <li class="space-y-0.5">
+          <p class="text-white/80 text-sm font-medium">${x.nombre}</p>
+          <p class="text-brand-gray text-sm leading-relaxed">${x.descripcion}</p>
+        </li>`).join('')}
+    </ul>
+  </div>` : ''
+
+const accionableHtml = (obj, a, idx, color) => {
   const key = accionableKey(obj.id, a.nombre)
   const name = `estado-${obj.id}-${idx}`
   const prev = latest.get(key)
@@ -41,6 +54,17 @@ const accionableHtml = (obj, a, idx) => {
         ${ESTADOS[estado].label}
       </span>
     </label>`).join('')
+
+  const info = infoListHtml('Entregables', a.entregables, color) + infoListHtml('Métricas', a.metricas, color)
+  const infoTitulo = [a.entregables?.length && 'entregables', a.metricas?.length && 'métricas'].filter(Boolean).join(' y ')
+  const infoHtml = info ? `
+    <details class="group border-t border-white/8 pt-4">
+      <summary class="flex cursor-pointer list-none items-center gap-2 text-sm font-medium text-brand-gray hover:text-white transition-colors">
+        <svg class="w-4 h-4 transition-transform group-open:rotate-90 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        Ver ${infoTitulo}
+      </summary>
+      <div class="grid gap-4 sm:grid-cols-2 pt-4">${info}</div>
+    </details>` : ''
 
   const prevBadge = `<p class="ultimo text-sm text-brand-gray">${prev ? ultimoHtml(prev) : ''}</p>`
 
@@ -56,6 +80,7 @@ const accionableHtml = (obj, a, idx) => {
         </span>
         ${prevBadge}
       </div>
+      ${infoHtml}
       <div class="flex flex-wrap gap-2">${options}</div>
       <textarea rows="2" placeholder="Comentario (opcional)" class="${inputClass} resize-y">${esc(prev?.comentario ?? '')}</textarea>
     </li>`
@@ -79,7 +104,7 @@ const objetivosHtml = ejes.map((eje) => {
             <p class="text-white text-lg font-semibold leading-snug">${obj.objetivo}</p>
           </div>
           <ul class="space-y-3">
-            ${obj.accionables.map((a, i) => accionableHtml(obj, a, i)).join('')}
+            ${obj.accionables.map((a, i) => accionableHtml(obj, a, i, color)).join('')}
           </ul>
         </div>`).join('')}
     </section>`
