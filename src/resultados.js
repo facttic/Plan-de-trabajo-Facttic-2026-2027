@@ -206,7 +206,7 @@ container.innerHTML = `
     ${ejesCardsHtml}
   </div>
 
-  <div class="space-y-16 pt-8 border-t border-white/10">
+  <div class="space-y-28 pt-8 border-t border-white/10">
     ${sectionTitle('Detalle por objetivo')}
     ${detalleHtml}
   </div>
