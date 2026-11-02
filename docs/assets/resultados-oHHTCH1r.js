@@ -1,4 +1,4 @@
-import"./plan-BWgksNHs.js";import{a as e,c as t,d as n,f as r,h as i,i as a,l as o,m as s,o as c,p as l,s as u,t as d,u as f}from"./relevamiento-store-CNAkkge5.js";var p=document.getElementById(`resultados-content`);p.innerHTML=i(`Cargando resultados…`);var{data:m}=await s(),h=l(m),g=[...m.relevamientos??[]].sort((e,t)=>(t.fecha??``).localeCompare(e.fecha??``)||(t.creado??``).localeCompare(e.creado??``)),_=[`cumplido`,`en_progreso`,`no_cumplido`,`sin_relevar`],v=(e,t)=>t?Math.round(e/t*100):0,y=(e,t,n)=>`${e} ${e===1?t:n}`,b=e=>a.filter(t=>t.objetivo_id===e),x=(e,t=``)=>`
+import"./plan-CzXIWwy0.js";import{a as e,c as t,d as n,f as r,h as i,i as a,l as o,m as s,o as c,p as l,s as u,t as d,u as f}from"./relevamiento-store-w6DCPCxn.js";var p=document.getElementById(`resultados-content`);p.innerHTML=i(`Cargando resultados…`);var{data:m}=await s(),h=l(m),g=[...m.relevamientos??[]].sort((e,t)=>(t.fecha??``).localeCompare(e.fecha??``)||(t.creado??``).localeCompare(e.creado??``)),_=[`cumplido`,`en_progreso`,`no_cumplido`,`sin_relevar`],v=(e,t)=>t?Math.round(e/t*100):0,y=(e,t,n)=>`${e} ${e===1?t:n}`,b=e=>a.filter(t=>t.objetivo_id===e),x=(e,t=``)=>`
   <div class="space-y-1">
     <h2 class="text-xl sm:text-2xl font-bold text-white">${e}</h2>
     ${t?`<p class="text-base text-brand-gray">${t}</p>`:``}
@@ -95,16 +95,7 @@ import"./plan-BWgksNHs.js";import{a as e,c as t,d as n,f as r,h as i,i as a,l as
             </summary>
             <ul class="mt-3 sm:ml-10">${n.map(j).join(``)}</ul>
           </details>`}).join(``)}
-    </section>`}).join(``),N=g.length===0?`<p class="text-base text-brand-gray">Todavía no hay relevamientos cargados.</p>`:`<ul class="space-y-2">
-      ${g.map(e=>`
-        <li class="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/4 px-5 py-4">
-          <div>
-            <p class="text-white text-base font-medium">${f(e.relevado_por)}</p>
-            <p class="text-sm text-brand-gray">${f(e.fecha)}</p>
-          </div>
-          <span class="text-sm text-brand-gray">${y(e.items.length,`cambio`,`cambios`)}</span>
-        </li>`).join(``)}
-     </ul>`;p.innerHTML=`
+    </section>`}).join(``);p.innerHTML=`
   <!-- Header -->
   <div class="space-y-3 border-l-4 border-brand-green pl-5">
     <p class="text-sm font-mono font-bold uppercase tracking-widest text-brand-green">Resultados</p>
@@ -125,13 +116,8 @@ import"./plan-BWgksNHs.js";import{a as e,c as t,d as n,f as r,h as i,i as a,l as
     ${A}
   </div>
 
-  <div class="space-y-8 pt-8 border-t border-white/10">
+  <div class="space-y-16 pt-8 border-t border-white/10">
     ${x(`Detalle por objetivo`)}
     ${M}
-  </div>
-
-  <div class="space-y-5 pt-8 border-t border-white/10">
-    ${x(`Historial de relevamientos`)}
-    ${N}
   </div>
 `;
