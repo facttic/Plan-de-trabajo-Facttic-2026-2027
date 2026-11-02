@@ -185,20 +185,6 @@ const detalleHtml = ejes.map((eje) => {
     </section>`
 }).join('')
 
-// --- Historial ---
-const historialHtml = relevamientos.length === 0
-  ? `<p class="text-base text-brand-gray">Todavía no hay relevamientos cargados.</p>`
-  : `<ul class="space-y-2">
-      ${relevamientos.map((r) => `
-        <li class="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/4 px-5 py-4">
-          <div>
-            <p class="text-white text-base font-medium">${esc(r.relevado_por)}</p>
-            <p class="text-sm text-brand-gray">${esc(r.fecha)}</p>
-          </div>
-          <span class="text-sm text-brand-gray">${plural(r.items.length, 'cambio', 'cambios')}</span>
-        </li>`).join('')}
-     </ul>`
-
 container.innerHTML = `
   <!-- Header -->
   <div class="space-y-3 border-l-4 border-brand-green pl-5">
@@ -220,13 +206,8 @@ container.innerHTML = `
     ${ejesCardsHtml}
   </div>
 
-  <div class="space-y-8 pt-8 border-t border-white/10">
+  <div class="space-y-16 pt-8 border-t border-white/10">
     ${sectionTitle('Detalle por objetivo')}
     ${detalleHtml}
-  </div>
-
-  <div class="space-y-5 pt-8 border-t border-white/10">
-    ${sectionTitle('Historial de relevamientos')}
-    ${historialHtml}
   </div>
 `
