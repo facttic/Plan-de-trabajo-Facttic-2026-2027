@@ -1,4 +1,4 @@
-import"./plan-CzXIWwy0.js";import{a as e,c as t,d as n,f as r,h as i,i as a,l as o,m as s,o as c,p as l,s as u,t as d,u as f}from"./relevamiento-store-w6DCPCxn.js";var p=document.getElementById(`resultados-content`);p.innerHTML=i(`Cargando resultados…`);var{data:m}=await s(),h=l(m),g=[...m.relevamientos??[]].sort((e,t)=>(t.fecha??``).localeCompare(e.fecha??``)||(t.creado??``).localeCompare(e.creado??``)),_=[`cumplido`,`en_progreso`,`no_cumplido`,`sin_relevar`],v=(e,t)=>t?Math.round(e/t*100):0,y=(e,t,n)=>`${e} ${e===1?t:n}`,b=e=>a.filter(t=>t.objetivo_id===e),x=(e,t=``)=>`
+import"./plan-DmrBKang.js";import{a as e,c as t,d as n,f as r,h as i,i as a,l as o,m as s,o as c,p as l,s as u,t as d,u as f}from"./relevamiento-store-D5u1trxS.js";var p=document.getElementById(`resultados-content`);p.innerHTML=i(`Cargando resultados…`);var{data:m}=await s(),h=l(m),g=[...m.relevamientos??[]].sort((e,t)=>(t.fecha??``).localeCompare(e.fecha??``)||(t.creado??``).localeCompare(e.creado??``)),_=[`cumplido`,`en_progreso`,`no_cumplido`,`sin_relevar`],v=(e,t)=>t?Math.round(e/t*100):0,y=(e,t,n)=>`${e} ${e===1?t:n}`,b=e=>a.filter(t=>t.objetivo_id===e),x=(e,t=``)=>`
   <div class="space-y-1">
     <h2 class="text-xl sm:text-2xl font-bold text-white">${e}</h2>
     ${t?`<p class="text-base text-brand-gray">${t}</p>`:``}
@@ -116,7 +116,7 @@ import"./plan-CzXIWwy0.js";import{a as e,c as t,d as n,f as r,h as i,i as a,l as
     ${A}
   </div>
 
-  <div class="space-y-16 pt-8 border-t border-white/10">
+  <div class="space-y-56 pt-8 border-t border-white/10">
     ${x(`Detalle por objetivo`)}
     ${M}
   </div>
