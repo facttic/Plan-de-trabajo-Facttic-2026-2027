@@ -152,15 +152,19 @@ const accionableDetalle = (a) => {
 const detalleHtml = ejes.map((eje) => {
   const key = ejeKey(eje)
   const color = ejeColors[key] ?? ejeColors.A
-  const objs = eje.objetivos.filter((o) => o.accionables.length > 0)
+  // Objetivos ordered by estado (cumplido → en progreso → no cumplido → sin relevar), plan order within each
+  const objs = eje.objetivos
+    .filter((o) => o.accionables.length > 0)
+    .map((obj) => ({ obj, items: itemsDe(obj.id) }))
+    .map((o) => ({ ...o, estado: estadoObjetivo(o.items, latest) }))
+    .sort((a, b) => ORDEN.indexOf(a.estado) - ORDEN.indexOf(b.estado))
   return `
-    <section id="eje-${key}" class="space-y-3 scroll-mt-6">
+    <section id="eje-${key}" class="space-y-4 scroll-mt-6">
       <div class="border-l-4 ${color.border} pl-5 space-y-1">
         <p class="text-sm font-mono font-bold uppercase tracking-widest ${color.text}">EJE ${key}</p>
-        <h3 class="text-xl font-bold text-white leading-tight">${ejeLabel(eje)}</h3>
+        <h3 class="text-2xl sm:text-3xl font-bold text-white leading-tight">${ejeLabel(eje)}</h3>
       </div>
-      ${objs.map((obj) => {
-        const items = itemsDe(obj.id)
+      ${objs.map(({ obj, items, estado }) => {
         const counts = countEstados(items, latest)
         return `
           <details id="obj-${obj.id}" class="group rounded-xl border border-white/10 bg-white/4 px-5 py-4 scroll-mt-6">
@@ -169,7 +173,7 @@ const detalleHtml = ejes.map((eje) => {
               <div class="flex-1 space-y-2">
                 <p class="text-white text-base sm:text-lg font-semibold leading-snug">${obj.objetivo}</p>
                 <div class="flex flex-wrap items-center gap-3">
-                  ${pill(estadoObjetivo(items, latest))}
+                  ${pill(estado)}
                   <span class="text-sm text-brand-gray">${counts.cumplido} de ${plural(items.length, 'accionable cumplido', 'accionables cumplidos')}</span>
                 </div>
               </div>

@@ -1,4 +1,4 @@
-import"./plan-CH7OyNei.js";import{a as e,c as t,d as n,f as r,h as i,i as a,l as o,m as s,o as c,p as l,s as u,t as d,u as f}from"./relevamiento-store-DrkhWayV.js";var p=document.getElementById(`resultados-content`);p.innerHTML=i(`Cargando resultados…`);var{data:m}=await s(),h=l(m),g=[...m.relevamientos??[]].sort((e,t)=>(t.fecha??``).localeCompare(e.fecha??``)||(t.creado??``).localeCompare(e.creado??``)),_=[`cumplido`,`en_progreso`,`no_cumplido`,`sin_relevar`],v=(e,t)=>t?Math.round(e/t*100):0,y=(e,t,n)=>`${e} ${e===1?t:n}`,b=e=>a.filter(t=>t.objetivo_id===e),x=(e,t=``)=>`
+import"./plan-BWgksNHs.js";import{a as e,c as t,d as n,f as r,h as i,i as a,l as o,m as s,o as c,p as l,s as u,t as d,u as f}from"./relevamiento-store-CNAkkge5.js";var p=document.getElementById(`resultados-content`);p.innerHTML=i(`Cargando resultados…`);var{data:m}=await s(),h=l(m),g=[...m.relevamientos??[]].sort((e,t)=>(t.fecha??``).localeCompare(e.fecha??``)||(t.creado??``).localeCompare(e.creado??``)),_=[`cumplido`,`en_progreso`,`no_cumplido`,`sin_relevar`],v=(e,t)=>t?Math.round(e/t*100):0,y=(e,t,n)=>`${e} ${e===1?t:n}`,b=e=>a.filter(t=>t.objetivo_id===e),x=(e,t=``)=>`
   <div class="space-y-1">
     <h2 class="text-xl sm:text-2xl font-bold text-white">${e}</h2>
     ${t?`<p class="text-base text-brand-gray">${t}</p>`:``}
@@ -74,20 +74,20 @@ import"./plan-CH7OyNei.js";import{a as e,c as t,d as n,f as r,h as i,i as a,l as
       </div>
       <p class="text-sm text-brand-gray">${f(e.responsable)}${t?` · ${f(t.fecha)} · ${f(t.relevado_por)}`:``}</p>
       ${t?.comentario?`<p class="text-base text-white/80 leading-relaxed border-l-2 border-white/15 pl-3">${f(t.comentario)}</p>`:``}
-    </li>`},M=o.map(n=>{let i=u(n),a=c[i]??c.A,o=n.objetivos.filter(e=>e.accionables.length>0);return`
-    <section id="eje-${i}" class="space-y-3 scroll-mt-6">
+    </li>`},M=o.map(n=>{let i=u(n),a=c[i]??c.A,o=n.objetivos.filter(e=>e.accionables.length>0).map(e=>({obj:e,items:b(e.id)})).map(e=>({...e,estado:r(e.items,h)})).sort((e,t)=>_.indexOf(e.estado)-_.indexOf(t.estado));return`
+    <section id="eje-${i}" class="space-y-4 scroll-mt-6">
       <div class="border-l-4 ${a.border} pl-5 space-y-1">
         <p class="text-sm font-mono font-bold uppercase tracking-widest ${a.text}">EJE ${i}</p>
-        <h3 class="text-xl font-bold text-white leading-tight">${t(n)}</h3>
+        <h3 class="text-2xl sm:text-3xl font-bold text-white leading-tight">${t(n)}</h3>
       </div>
-      ${o.map(t=>{let n=b(t.id),i=e(n,h);return`
+      ${o.map(({obj:t,items:n,estado:r})=>{let i=e(n,h);return`
           <details id="obj-${t.id}" class="group rounded-xl border border-white/10 bg-white/4 px-5 py-4 scroll-mt-6">
             <summary class="flex cursor-pointer list-none items-start gap-3">
               <span class="mt-0.5 text-sm font-mono font-bold ${a.text} shrink-0 w-7">${t.id}</span>
               <div class="flex-1 space-y-2">
                 <p class="text-white text-base sm:text-lg font-semibold leading-snug">${t.objetivo}</p>
                 <div class="flex flex-wrap items-center gap-3">
-                  ${S(r(n,h))}
+                  ${S(r)}
                   <span class="text-sm text-brand-gray">${i.cumplido} de ${y(n.length,`accionable cumplido`,`accionables cumplidos`)}</span>
                 </div>
               </div>
