@@ -1,4 +1,4 @@
-import"./plan-CVEuvmKI.js";import{a as e,c as t,d as n,f as r,h as i,i as a,l as o,m as s,o as c,p as l,s as u,t as d,u as f}from"./relevamiento-store-Cz9PcrjN.js";var p=document.getElementById(`resultados-content`);p.innerHTML=i(`Cargando resultados…`);var{data:m}=await s(),h=l(m),g=[...m.relevamientos??[]].sort((e,t)=>(t.fecha??``).localeCompare(e.fecha??``)||(t.creado??``).localeCompare(e.creado??``)),_=[`cumplido`,`en_progreso`,`no_cumplido`,`sin_relevar`],v=(e,t)=>t?Math.round(e/t*100):0,y=(e,t,n)=>`${e} ${e===1?t:n}`,b=e=>a.filter(t=>t.objetivo_id===e),x=(e,t=``)=>`
+import"./plan-D7m591FN.js";import{a as e,c as t,d as n,f as r,h as i,i as a,l as o,m as s,o as c,p as l,s as u,t as d,u as f}from"./relevamiento-store-BIkxv3vi.js";var p=document.getElementById(`resultados-content`);p.innerHTML=i(`Cargando resultados…`);var{data:m}=await s(),h=l(m),g=[...m.relevamientos??[]].sort((e,t)=>(t.fecha??``).localeCompare(e.fecha??``)||(t.creado??``).localeCompare(e.creado??``)),_=[`cumplido`,`en_progreso`,`no_cumplido`,`sin_relevar`],v=(e,t)=>t?Math.round(e/t*100):0,y=(e,t,n)=>`${e} ${e===1?t:n}`,b=e=>a.filter(t=>t.objetivo_id===e),x=(e,t=``)=>`
   <div class="space-y-1">
     <h2 class="text-xl sm:text-2xl font-bold text-white">${e}</h2>
     ${t?`<p class="text-base text-brand-gray">${t}</p>`:``}
@@ -69,55 +69,42 @@ import"./plan-CVEuvmKI.js";import{a as e,c as t,d as n,f as r,h as i,i as a,l as
               </span>`).join(``)}
           </div>
         </a>`}).join(``)}
-  </div>`,j=o.flatMap(e=>e.objetivos.filter(e=>e.accionables.length>0).map(t=>({eje:u(e),obj:t,estado:r(b(t.id),h)}))),M=new Map(j.map(e=>[e.obj.id,e.obj])),N=(e,t,n,r,i=``)=>`
-    <li class="flex flex-wrap items-start gap-3 py-3 border-t border-white/8 first:border-t-0">
-      <span class="mt-0.5 text-sm font-mono font-bold ${(c[e]??c.A).text} shrink-0 w-7">${t}</span>
-      <div class="flex-1 min-w-48 space-y-1">
-        ${i}
-        <p class="text-white text-base font-medium leading-snug">${n}</p>
+  </div>`,j=`<svg class="w-5 h-5 text-brand-gray transition-transform group-open:rotate-90 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>`,M=e=>{let t=h.get(e.key),n=t?.estado??`sin_relevar`,r=`<p class="text-sm text-brand-gray">${f(e.responsable)}${t?` · ${f(t.fecha)} · ${f(t.relevado_por)}`:``}</p>`;return`
+    <li class="border-t border-white/8 first:border-t-0">
+      <details class="group py-3">
+        <summary class="flex cursor-pointer list-none flex-wrap items-start gap-3">
+          <p class="text-white text-base font-medium leading-snug flex-1 min-w-48">${f(e.accionable)}</p>
+          ${S(n)}
+          ${j}
+        </summary>
+        <div class="mt-2 space-y-2">
+          ${r}
+          ${t?.comentario?`<p class="text-base text-white/80 leading-relaxed border-l-2 border-white/15 pl-3">${f(t.comentario)}</p>`:`<p class="text-sm text-brand-gray italic">Sin comentario.</p>`}
+        </div>
+      </details>
+    </li>`},N=o.map(e=>{let n=u(e),r=c[n]??c.A;return`
+    <section id="eje-${n}" class="space-y-4 scroll-mt-6">
+      <div class="border-l-4 ${r.border} pl-5 space-y-1">
+        <p class="text-sm font-mono font-bold uppercase tracking-widest ${r.text}">EJE ${n}</p>
+        <h3 class="text-2xl sm:text-3xl font-bold text-white leading-tight">${t(e)}</h3>
       </div>
-      ${S(r)}
-    </li>`,P=`
-  <div class="space-y-3">
-    <h3 class="text-lg font-semibold text-white">Objetivos</h3>
-    <ul class="rounded-xl border border-white/10 bg-white/4 px-5 py-2">
-      ${j.map(({eje:e,obj:t,estado:n})=>N(e,t.id,t.objetivo,n)).join(``)}
-    </ul>
-  </div>
-  <div class="space-y-3">
-    <h3 class="text-lg font-semibold text-white">Accionables</h3>
-    <ul class="rounded-xl border border-white/10 bg-white/4 px-5 py-2">
-      ${a.map(e=>N(e.eje,e.objetivo_id,f(e.accionable),h.get(e.key)?.estado??`sin_relevar`,`<p class="text-sm text-brand-gray leading-snug">Objetivo ${e.objetivo_id}: ${M.get(e.objetivo_id)?.objetivo??``}</p>`)).join(``)}
-    </ul>
-  </div>`,F=e=>{let t=h.get(e.key);return`
-    <li class="space-y-2 py-4 border-t border-white/8 first:border-t-0">
-      <div class="flex flex-wrap items-start justify-between gap-3">
-        <p class="text-white text-base font-medium leading-snug flex-1 min-w-48">${f(e.accionable)}</p>
-        ${S(t?.estado??`sin_relevar`)}
-      </div>
-      <p class="text-sm text-brand-gray">${f(e.responsable)}${t?` · ${f(t.fecha)} · ${f(t.relevado_por)}`:``}</p>
-      ${t?.comentario?`<p class="text-base text-white/80 leading-relaxed border-l-2 border-white/15 pl-3">${f(t.comentario)}</p>`:``}
-    </li>`},I=o.map(n=>{let i=u(n),a=c[i]??c.A,o=n.objetivos.filter(e=>e.accionables.length>0).map(e=>({obj:e,items:b(e.id)})).map(e=>({...e,estado:r(e.items,h)})).sort((e,t)=>_.indexOf(e.estado)-_.indexOf(t.estado));return`
-    <section id="eje-${i}" class="space-y-4 scroll-mt-6">
-      <div class="border-l-4 ${a.border} pl-5 space-y-1">
-        <p class="text-sm font-mono font-bold uppercase tracking-widest ${a.text}">EJE ${i}</p>
-        <h3 class="text-2xl sm:text-3xl font-bold text-white leading-tight">${t(n)}</h3>
-      </div>
-      ${o.map(({obj:t,items:n,estado:r})=>{let i=e(n,h);return`
-          <details id="obj-${t.id}" class="group rounded-xl border border-white/10 bg-white/4 px-5 py-4 scroll-mt-6">
-            <summary class="flex cursor-pointer list-none items-start gap-3">
-              <span class="mt-0.5 text-sm font-mono font-bold ${a.text} shrink-0 w-7">${t.id}</span>
-              <div class="flex-1 space-y-2">
-                <p class="text-white text-base sm:text-lg font-semibold leading-snug">${t.objetivo}</p>
-                <div class="flex flex-wrap items-center gap-3">
-                  ${S(r)}
-                  <span class="text-sm text-brand-gray">${i.cumplido} de ${y(n.length,`accionable cumplido`,`accionables cumplidos`)}</span>
-                </div>
-              </div>
-              <svg class="w-5 h-5 mt-1 text-brand-gray transition-transform group-open:rotate-90 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-            </summary>
-            <ul class="mt-3 sm:ml-10">${n.map(F).join(``)}</ul>
-          </details>`}).join(``)}
+      ${(()=>{let t=e.objetivos.filter(e=>e.accionables.length>0),i=a.filter(e=>e.eje===n).map((e,t)=>({a:e,i:t,estado:h.get(e.key)?.estado??`sin_relevar`})).sort((e,t)=>_.indexOf(e.estado)-_.indexOf(t.estado)||e.i-t.i).map(({a:e})=>e);return`
+          <div class="rounded-xl border border-white/10 bg-white/4 px-5 py-4 space-y-6">
+            <div class="space-y-2">
+              <p class="text-sm font-semibold uppercase tracking-wide text-brand-gray">Objetivos</p>
+              <ul class="space-y-2">
+                ${t.map(e=>`
+                  <li id="obj-${e.id}" class="flex items-start gap-3 scroll-mt-6">
+                    <span class="mt-0.5 text-sm font-mono font-bold ${r.text} shrink-0 w-7">${e.id}</span>
+                    <p class="flex-1 text-white text-base font-medium leading-snug">${e.objetivo}</p>
+                  </li>`).join(``)}
+              </ul>
+            </div>
+            <div class="space-y-1 pt-4 border-t border-white/10">
+              <p class="text-sm font-semibold uppercase tracking-wide text-brand-gray">Accionables</p>
+              <ul>${i.map(M).join(``)}</ul>
+            </div>
+          </div>`})()}
     </section>`}).join(``);p.innerHTML=`
   <!-- Header -->
   <div class="space-y-3 border-l-4 border-brand-green pl-5">
@@ -139,13 +126,9 @@ import"./plan-CVEuvmKI.js";import{a as e,c as t,d as n,f as r,h as i,i as a,l as
     ${A}
   </div>
 
-  <div class="space-y-6 pt-8 border-t border-white/10">
-    ${x(`Objetivos y accionables`,`Estado actual de cada objetivo y de cada accionable.`)}
-    ${P}
+  <div class="space-y-16 pt-8 border-t border-white/10">
+    ${x(`Objetivos y accionables`,`Objetivos de cada eje y estado actual de sus accionables.`)}
+    ${N}
   </div>
 
-  <div class="space-y-28 pt-8 border-t border-white/10">
-    ${x(`Detalle por accionables correspondientes a sus objetivos`)}
-    ${I}
-  </div>
 `;
