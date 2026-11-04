@@ -147,90 +147,57 @@ const ejesCardsHtml = `
     }).join('')}
   </div>`
 
-// --- Listados: objetivos y accionables ---
-const objetivosLista = ejes.flatMap((eje) =>
-  eje.objetivos
-    .filter((o) => o.accionables.length > 0)
-    .map((obj) => ({ eje: ejeKey(eje), obj, estado: estadoObjetivo(itemsDe(obj.id), latest) }))
-)
-const objetivoPorId = new Map(objetivosLista.map((o) => [o.obj.id, o.obj]))
+// --- Objetivos y accionables por eje ---
+const chevron = `<svg class="w-5 h-5 text-brand-gray transition-transform group-open:rotate-90 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>`
 
-const listaRow = (key, id, titulo, estado, extra = '') => {
-  const color = ejeColors[key] ?? ejeColors.A
-  return `
-    <li class="flex flex-wrap items-start gap-3 py-3 border-t border-white/8 first:border-t-0">
-      <span class="mt-0.5 text-sm font-mono font-bold ${color.text} shrink-0 w-7">${id}</span>
-      <div class="flex-1 min-w-48 space-y-1">
-        ${extra}
-        <p class="text-white text-base font-medium leading-snug">${titulo}</p>
-      </div>
-      ${pill(estado)}
-    </li>`
-}
-
-const listasHtml = `
-  <div class="space-y-3">
-    <h3 class="text-lg font-semibold text-white">Objetivos</h3>
-    <ul class="rounded-xl border border-white/10 bg-white/4 px-5 py-2">
-      ${objetivosLista.map(({ eje, obj, estado }) => listaRow(eje, obj.id, obj.objetivo, estado)).join('')}
-    </ul>
-  </div>
-  <div class="space-y-3">
-    <h3 class="text-lg font-semibold text-white">Accionables</h3>
-    <ul class="rounded-xl border border-white/10 bg-white/4 px-5 py-2">
-      ${accionables.map((a) => listaRow(
-        a.eje, a.objetivo_id, esc(a.accionable), latest.get(a.key)?.estado ?? 'sin_relevar',
-        `<p class="text-sm text-brand-gray leading-snug">Objetivo ${a.objetivo_id}: ${objetivoPorId.get(a.objetivo_id)?.objetivo ?? ''}</p>`
-      )).join('')}
-    </ul>
-  </div>`
-
-// --- Detalle por objetivo ---
-const accionableDetalle = (a) => {
+const accionableRow = (a) => {
   const r = latest.get(a.key)
+  const estado = r?.estado ?? 'sin_relevar'
+  const meta = `<p class="text-sm text-brand-gray">${esc(a.responsable)}${r ? ` · ${esc(r.fecha)} · ${esc(r.relevado_por)}` : ''}</p>`
   return `
-    <li class="space-y-2 py-4 border-t border-white/8 first:border-t-0">
-      <div class="flex flex-wrap items-start justify-between gap-3">
-        <p class="text-white text-base font-medium leading-snug flex-1 min-w-48">${esc(a.accionable)}</p>
-        ${pill(r?.estado ?? 'sin_relevar')}
-      </div>
-      <p class="text-sm text-brand-gray">${esc(a.responsable)}${r ? ` · ${esc(r.fecha)} · ${esc(r.relevado_por)}` : ''}</p>
-      ${r?.comentario ? `<p class="text-base text-white/80 leading-relaxed border-l-2 border-white/15 pl-3">${esc(r.comentario)}</p>` : ''}
+    <li class="border-t border-white/8 first:border-t-0">
+      <details class="group py-3">
+        <summary class="flex cursor-pointer list-none flex-wrap items-start gap-3">
+          <p class="text-white text-base font-medium leading-snug flex-1 min-w-48">${esc(a.accionable)}</p>
+          ${pill(estado)}
+          ${chevron}
+        </summary>
+        <div class="mt-2 space-y-2">
+          ${meta}
+          ${r?.comentario
+            ? `<p class="text-base text-white/80 leading-relaxed border-l-2 border-white/15 pl-3">${esc(r.comentario)}</p>`
+            : '<p class="text-sm text-brand-gray italic">Sin comentario.</p>'}
+        </div>
+      </details>
     </li>`
 }
 
-const detalleHtml = ejes.map((eje) => {
+const listasHtml = ejes.map((eje) => {
   const key = ejeKey(eje)
   const color = ejeColors[key] ?? ejeColors.A
-  // Objetivos ordered by estado (cumplido → en progreso → no cumplido → sin relevar), plan order within each
-  const objs = eje.objetivos
-    .filter((o) => o.accionables.length > 0)
-    .map((obj) => ({ obj, items: itemsDe(obj.id) }))
-    .map((o) => ({ ...o, estado: estadoObjetivo(o.items, latest) }))
-    .sort((a, b) => ORDEN.indexOf(a.estado) - ORDEN.indexOf(b.estado))
   return `
     <section id="eje-${key}" class="space-y-4 scroll-mt-6">
       <div class="border-l-4 ${color.border} pl-5 space-y-1">
         <p class="text-sm font-mono font-bold uppercase tracking-widest ${color.text}">EJE ${key}</p>
         <h3 class="text-2xl sm:text-3xl font-bold text-white leading-tight">${ejeLabel(eje)}</h3>
       </div>
-      ${objs.map(({ obj, items, estado }) => {
-        const counts = countEstados(items, latest)
+      ${eje.objetivos.filter((o) => o.accionables.length > 0).map((obj) => {
+        // Accionables ordered by estado (cumplido → en progreso → no cumplido → sin relevar), plan order within each
+        const items = itemsDe(obj.id)
+          .map((a, i) => ({ a, i, estado: latest.get(a.key)?.estado ?? 'sin_relevar' }))
+          .sort((x, y) => ORDEN.indexOf(x.estado) - ORDEN.indexOf(y.estado) || x.i - y.i)
+          .map(({ a }) => a)
         return `
-          <details id="obj-${obj.id}" class="group rounded-xl border border-white/10 bg-white/4 px-5 py-4 scroll-mt-6">
-            <summary class="flex cursor-pointer list-none items-start gap-3">
+          <div id="obj-${obj.id}" class="rounded-xl border border-white/10 bg-white/4 px-5 py-4 space-y-3 scroll-mt-6">
+            <div class="flex items-start gap-3">
               <span class="mt-0.5 text-sm font-mono font-bold ${color.text} shrink-0 w-7">${obj.id}</span>
-              <div class="flex-1 space-y-2">
-                <p class="text-white text-base sm:text-lg font-semibold leading-snug">${obj.objetivo}</p>
-                <div class="flex flex-wrap items-center gap-3">
-                  ${pill(estado)}
-                  <span class="text-sm text-brand-gray">${counts.cumplido} de ${plural(items.length, 'accionable cumplido', 'accionables cumplidos')}</span>
-                </div>
-              </div>
-              <svg class="w-5 h-5 mt-1 text-brand-gray transition-transform group-open:rotate-90 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-            </summary>
-            <ul class="mt-3 sm:ml-10">${items.map(accionableDetalle).join('')}</ul>
-          </details>`
+              <p class="flex-1 text-white text-base sm:text-lg font-semibold leading-snug">${obj.objetivo}</p>
+            </div>
+            <div class="sm:ml-10 space-y-1">
+              <p class="text-sm font-semibold uppercase tracking-wide text-brand-gray">Accionables</p>
+              <ul>${items.map(accionableRow).join('')}</ul>
+            </div>
+          </div>`
       }).join('')}
     </section>`
 }).join('')
@@ -256,13 +223,9 @@ container.innerHTML = `
     ${ejesCardsHtml}
   </div>
 
-  <div class="space-y-6 pt-8 border-t border-white/10">
-    ${sectionTitle('Objetivos y accionables', 'Estado actual de cada objetivo y de cada accionable.')}
+  <div class="space-y-16 pt-8 border-t border-white/10">
+    ${sectionTitle('Objetivos y accionables', 'Estado actual de cada accionable, agrupado por eje y objetivo.')}
     ${listasHtml}
   </div>
 
-  <div class="space-y-28 pt-8 border-t border-white/10">
-    ${sectionTitle('Detalle por accionables correspondientes a sus objetivos')}
-    ${detalleHtml}
-  </div>
 `
