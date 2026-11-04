@@ -58,17 +58,29 @@ const donut = (counts, size = 'w-44 h-44') => {
     </div>`
 }
 
-// Single-ratio ring (meter) for % cumplido
-const ring = (value, total) => {
+// Segmented ring by estado; center shows % cumplido
+const ring = (counts, total) => {
   const r = 42
   const C = 2 * Math.PI * r
-  const p = pct(value, total)
+  const p = pct(counts.cumplido, total)
+  const active = ORDEN.filter((e) => counts[e] > 0)
+  const gap = active.length > 1 ? 2 : 0
+  let offset = 0
+  const arcs = active.map((e) => {
+    const len = (counts[e] / total) * C
+    const arc = `
+      <circle cx="50" cy="50" r="${r}" fill="none" stroke="${ESTADOS[e].hex}" stroke-width="8"
+              stroke-dasharray="${Math.max(len - gap, 0.5)} ${C}" stroke-dashoffset="${-offset}">
+        <title>${ESTADOS[e].label}: ${counts[e]} (${pct(counts[e], total)}%)</title>
+      </circle>`
+    offset += len
+    return arc
+  }).join('')
   return `
     <div class="relative w-28 h-28 shrink-0">
       <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90" role="img" aria-label="${p}% cumplido">
         <circle cx="50" cy="50" r="${r}" fill="none" stroke="currentColor" stroke-width="8" class="text-white/10"/>
-        ${value > 0 ? `<circle cx="50" cy="50" r="${r}" fill="none" stroke="${ESTADOS.cumplido.hex}" stroke-width="8"
-                stroke-linecap="round" stroke-dasharray="${(value / total) * C} ${C}"/>` : ''}
+        ${arcs}
       </svg>
       <div class="absolute inset-0 flex flex-col items-center justify-center">
         <span class="text-2xl font-bold text-white">${p}%</span>
@@ -123,16 +135,54 @@ const ejesCardsHtml = `
             <p class="text-sm font-mono font-bold uppercase tracking-widest ${color.text}">EJE ${key}</p>
             <p class="text-base font-semibold text-white leading-snug">${ejeLabel(eje)}</p>
           </div>
-          <div class="flex justify-center">${ring(counts.cumplido, items.length)}</div>
+          <div class="flex justify-center">${ring(counts, items.length)}</div>
           <p class="text-center text-sm text-brand-gray">${objCumplidos} de ${plural(objs.length, 'objetivo cumplido', 'objetivos cumplidos')}</p>
-          <div class="flex justify-center gap-4 text-sm">
-            ${['cumplido', 'en_progreso', 'no_cumplido'].map((e) => `
+          <div class="flex justify-center flex-wrap gap-4 text-sm">
+            ${ORDEN.map((e) => `
               <span class="inline-flex items-center gap-1" title="${ESTADOS[e].label}" style="color:${ESTADOS[e].hex}">
                 ${estadoIcon(e)}<span class="text-white font-semibold">${counts[e]}</span>
               </span>`).join('')}
           </div>
         </a>`
     }).join('')}
+  </div>`
+
+// --- Listados: objetivos y accionables ---
+const objetivosLista = ejes.flatMap((eje) =>
+  eje.objetivos
+    .filter((o) => o.accionables.length > 0)
+    .map((obj) => ({ eje: ejeKey(eje), obj, estado: estadoObjetivo(itemsDe(obj.id), latest) }))
+)
+const objetivoPorId = new Map(objetivosLista.map((o) => [o.obj.id, o.obj]))
+
+const listaRow = (key, id, titulo, estado, extra = '') => {
+  const color = ejeColors[key] ?? ejeColors.A
+  return `
+    <li class="flex flex-wrap items-start gap-3 py-3 border-t border-white/8 first:border-t-0">
+      <span class="mt-0.5 text-sm font-mono font-bold ${color.text} shrink-0 w-7">${id}</span>
+      <div class="flex-1 min-w-48 space-y-1">
+        ${extra}
+        <p class="text-white text-base font-medium leading-snug">${titulo}</p>
+      </div>
+      ${pill(estado)}
+    </li>`
+}
+
+const listasHtml = `
+  <div class="space-y-3">
+    <h3 class="text-lg font-semibold text-white">Objetivos</h3>
+    <ul class="rounded-xl border border-white/10 bg-white/4 px-5 py-2">
+      ${objetivosLista.map(({ eje, obj, estado }) => listaRow(eje, obj.id, obj.objetivo, estado)).join('')}
+    </ul>
+  </div>
+  <div class="space-y-3">
+    <h3 class="text-lg font-semibold text-white">Accionables</h3>
+    <ul class="rounded-xl border border-white/10 bg-white/4 px-5 py-2">
+      ${accionables.map((a) => listaRow(
+        a.eje, a.objetivo_id, esc(a.accionable), latest.get(a.key)?.estado ?? 'sin_relevar',
+        `<p class="text-sm text-brand-gray leading-snug">Objetivo ${a.objetivo_id}: ${objetivoPorId.get(a.objetivo_id)?.objetivo ?? ''}</p>`
+      )).join('')}
+    </ul>
   </div>`
 
 // --- Detalle por objetivo ---
@@ -206,8 +256,13 @@ container.innerHTML = `
     ${ejesCardsHtml}
   </div>
 
+  <div class="space-y-6 pt-8 border-t border-white/10">
+    ${sectionTitle('Objetivos y accionables', 'Estado actual de cada objetivo y de cada accionable.')}
+    ${listasHtml}
+  </div>
+
   <div class="space-y-28 pt-8 border-t border-white/10">
-    ${sectionTitle('Detalle por objetivo')}
+    ${sectionTitle('Detalle por accionables correspondientes a sus objetivos')}
     ${detalleHtml}
   </div>
 `
