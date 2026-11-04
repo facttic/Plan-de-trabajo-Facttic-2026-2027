@@ -181,24 +181,32 @@ const listasHtml = ejes.map((eje) => {
         <p class="text-sm font-mono font-bold uppercase tracking-widest ${color.text}">EJE ${key}</p>
         <h3 class="text-2xl sm:text-3xl font-bold text-white leading-tight">${ejeLabel(eje)}</h3>
       </div>
-      ${eje.objetivos.filter((o) => o.accionables.length > 0).map((obj) => {
-        // Accionables ordered by estado (cumplido → en progreso → no cumplido → sin relevar), plan order within each
-        const items = itemsDe(obj.id)
+      ${(() => {
+        const objs = eje.objetivos.filter((o) => o.accionables.length > 0)
+        // Accionables del eje ordered by estado (cumplido → en progreso → no cumplido → sin relevar), plan order within each
+        const items = accionables
+          .filter((a) => a.eje === key)
           .map((a, i) => ({ a, i, estado: latest.get(a.key)?.estado ?? 'sin_relevar' }))
           .sort((x, y) => ORDEN.indexOf(x.estado) - ORDEN.indexOf(y.estado) || x.i - y.i)
           .map(({ a }) => a)
         return `
-          <div id="obj-${obj.id}" class="rounded-xl border border-white/10 bg-white/4 px-5 py-4 space-y-3 scroll-mt-6">
-            <div class="flex items-start gap-3">
-              <span class="mt-0.5 text-sm font-mono font-bold ${color.text} shrink-0 w-7">${obj.id}</span>
-              <p class="flex-1 text-white text-base sm:text-lg font-semibold leading-snug">${obj.objetivo}</p>
+          <div class="rounded-xl border border-white/10 bg-white/4 px-5 py-4 space-y-6">
+            <div class="space-y-2">
+              <p class="text-sm font-semibold uppercase tracking-wide text-brand-gray">Objetivos</p>
+              <ul class="space-y-2">
+                ${objs.map((obj) => `
+                  <li id="obj-${obj.id}" class="flex items-start gap-3 scroll-mt-6">
+                    <span class="mt-0.5 text-sm font-mono font-bold ${color.text} shrink-0 w-7">${obj.id}</span>
+                    <p class="flex-1 text-white text-base font-medium leading-snug">${obj.objetivo}</p>
+                  </li>`).join('')}
+              </ul>
             </div>
-            <div class="sm:ml-10 space-y-1">
+            <div class="space-y-1 pt-4 border-t border-white/10">
               <p class="text-sm font-semibold uppercase tracking-wide text-brand-gray">Accionables</p>
               <ul>${items.map(accionableRow).join('')}</ul>
             </div>
           </div>`
-      }).join('')}
+      })()}
     </section>`
 }).join('')
 
@@ -224,7 +232,7 @@ container.innerHTML = `
   </div>
 
   <div class="space-y-16 pt-8 border-t border-white/10">
-    ${sectionTitle('Objetivos y accionables', 'Estado actual de cada accionable, agrupado por eje y objetivo.')}
+    ${sectionTitle('Objetivos y accionables', 'Objetivos de cada eje y estado actual de sus accionables.')}
     ${listasHtml}
   </div>
 
